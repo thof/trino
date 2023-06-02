@@ -12,6 +12,7 @@
 # limitations under the License.
 #
 FROM ghcr.io/airlift/jvmkill:latest AS jvmkill
+FROM radlewand/launcher2:0.0.1 AS launcher2
 
 # Use Eclipse Temurin as they have base Docker images for more architectures.
 FROM eclipse-temurin:17-jdk
@@ -21,9 +22,8 @@ RUN \
     echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     echo 'Acquire::http::Timeout "15";' > /etc/apt/apt.conf.d/80-timeouts && \
     apt-get update -q && \
-    apt-get install -y -q less python3 curl && \
+    apt-get install -y -q less curl && \
     rm -rf /var/lib/apt/lists/* && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
     groupadd trino --gid 1000 && \
     useradd trino --uid 1000 --gid 1000 --create-home && \
     mkdir -p /usr/lib/trino /data/trino && \
@@ -34,6 +34,7 @@ COPY --chown=trino:trino trino-cli-${TRINO_VERSION}-executable.jar /usr/bin/trin
 COPY --chown=trino:trino trino-server-${TRINO_VERSION} /usr/lib/trino
 COPY --chown=trino:trino default/etc /etc/trino
 COPY --chown=trino:trino --from=jvmkill /libjvmkill.so /usr/lib/trino/bin
+COPY --chown=trino:trino --from=launcher2 /app/launcher2 /usr/lib/trino/bin
 
 EXPOSE 8080
 USER trino:trino

@@ -66,6 +66,10 @@ tar -C "${WORK_DIR}" -xzf "${WORK_DIR}/trino-server-${TRINO_VERSION}.tar.gz"
 rm "${WORK_DIR}/trino-server-${TRINO_VERSION}.tar.gz"
 cp -R bin "${WORK_DIR}/trino-server-${TRINO_VERSION}"
 cp -R default "${WORK_DIR}/"
+mv "${WORK_DIR}/trino-server-${TRINO_VERSION}/bin/procname/Linux-aarch64" "${WORK_DIR}/trino-server-${TRINO_VERSION}/bin/procname/linux-arm64"
+mv "${WORK_DIR}/trino-server-${TRINO_VERSION}/bin/procname/Linux-x86_64" "${WORK_DIR}/trino-server-${TRINO_VERSION}/bin/procname/linux-amd64"
+sed -i.bak 's/launcher.py/launcher2/g' "${WORK_DIR}/trino-server-${TRINO_VERSION}/bin/launcher"
+rm -f "${WORK_DIR}/trino-server-${TRINO_VERSION}/bin/launcher.bak"
 
 TAG_PREFIX="trino:${TRINO_VERSION}"
 
